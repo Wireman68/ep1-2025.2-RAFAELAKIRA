@@ -2,8 +2,6 @@ package main.bancos;
 
 import main.registro.*;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 
 public class BancoDeDados
@@ -54,7 +52,7 @@ public class BancoDeDados
         return null;
     }
 
-    public Paciente getPatient(String cpf)
+    public Paciente getPacienteId(String cpf)
     {
         for(Paciente p : pacientes)
         {
@@ -74,6 +72,26 @@ public class BancoDeDados
         for(Medico m : medicos)
         {
             if(m.getID() == crm) return m;
+        }
+
+        return null;
+    }
+
+    public PlanoDeSaude getPlano(String id)
+    {
+        for(PlanoDeSaude p : planoDeSaudes)
+        {
+            if(p.getID().equals(id)) return p;
+        }
+
+        return null;
+    }
+
+    public PlanoDeSaude getPlanoNome(String nome)
+    {
+        for(PlanoDeSaude p : planoDeSaudes)
+        {
+            if(p.nome().equals(nome)) return p;
         }
 
         return null;

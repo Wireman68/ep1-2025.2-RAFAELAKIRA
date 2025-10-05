@@ -134,7 +134,7 @@ public class RegistroEventos
 
                     }
                 } catch (IOException e) {
-                    System.out.println("Error:" + e.getMessage());
+                    System.out.println("Erro:" + e.getMessage());
                 }
             }
         }
@@ -145,5 +145,15 @@ public class RegistroEventos
         db.registrar(c, false);
         c.getPaciente().adicionarConsulta(c);
         c.getMedico().agendar(c.getData());
+    }
+
+    public static void registrarInternacao(BancoDeDados db, Internacao i) throws IllegalArgumentException
+    {
+        db.getInternacoes().forEach(internacao ->
+        {
+            if(!internacao.getStatus() && internacao.getQuarto() == i.getQuarto()) throw new IllegalArgumentException("Erro: quarto está ocupado.");
+        });
+        db.registrar(i, false);
+        i.getPaciente().adicionarInternacao(i);
     }
 }

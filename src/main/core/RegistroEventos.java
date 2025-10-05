@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import main.bancos.BancoDeDados;
 import main.registro.*;
 
+import java.time.YearMonth;
 import java.util.Comparator;
 
 public class RegistroEventos
@@ -73,6 +74,12 @@ public class RegistroEventos
         }
     }
 
+    public static void registrarPlanoEspecial(BancoDeDados db)
+    {
+        PlanoDeSaude planoDeSaude = new PlanoDeSaude("ESPECIALINTERNACAO", 0, YearMonth.now().plusYears(3), 1);
+        db.registrar(planoDeSaude, false);
+    }
+
     public static void resetBancoDeDados()
     {
         try
@@ -129,7 +136,14 @@ public class RegistroEventos
                         }
                         case "planos" -> {
                             writer.println("nome,plano,dataDeValidade,desconto");
-                            db.getPlanos().forEach(e -> writer.println(e.paraDado() + "\n"));
+                            for(PlanoDeSaude e : db.getPlanos())
+                            {
+                                if("ESPECIALINTERNACAO".equalsIgnoreCase(e.nome()))
+                                {
+                                    continue;
+                                }
+                                writer.println(e.paraDado() + "\n");
+                            }
                         }
 
                     }
@@ -138,22 +152,5 @@ public class RegistroEventos
                 }
             }
         }
-    }
-
-    public static void registrarConsulta(BancoDeDados db, Consulta c)
-    {
-        db.registrar(c, false);
-        c.getPaciente().adicionarConsulta(c);
-        c.getMedico().agendar(c.getData());
-    }
-
-    public static void registrarInternacao(BancoDeDados db, Internacao i) throws IllegalArgumentException
-    {
-        db.getInternacoes().forEach(internacao ->
-        {
-            if(!internacao.getStatus() && internacao.getQuarto() == i.getQuarto()) throw new IllegalArgumentException("Erro: quarto está ocupado.");
-        });
-        db.registrar(i, false);
-        i.getPaciente().adicionarInternacao(i);
     }
 }

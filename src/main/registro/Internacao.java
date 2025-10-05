@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Internacao implements Entidade
 {
-    private static final DateTimeFormatter FORMATO_TEMPO = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm");
+    private static final DateTimeFormatter FORMATO_CSV = DateTimeFormatter.ofPattern("ddMMyyyyHHmm");
 
     private final Paciente paciente;
     private final String id;
@@ -18,6 +18,7 @@ public class Internacao implements Entidade
     private LocalDateTime dataDeSaida;
     private int quarto;
     private double custo;
+    //TRUE = EXISTE, FALSE = FINALIZADA / CANCELADA
     private boolean status;
 
     public Internacao(Paciente paciente, Medico medico, LocalDateTime dataDeEntrada, int quarto, double custo)
@@ -34,7 +35,7 @@ public class Internacao implements Entidade
                 + medico.getID().charAt(0)
                 + medico.getID().charAt(1)
                 + medico.getID().charAt(2)
-                + data.toString() + quarto + custo;
+                + data.format(FORMATO_CSV) + quarto + custo;
     }
 
     public Paciente getPaciente() {
@@ -53,6 +54,14 @@ public class Internacao implements Entidade
         return status;
     }
 
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getData() {
+        return data;
+    }
+
     public LocalDateTime getDataDeSaida() {
         return dataDeSaida;
     }
@@ -61,19 +70,24 @@ public class Internacao implements Entidade
         this.dataDeSaida = dataDeSaida;
     }
 
+    public void setCusto(PlanoDeSaude planoDeSaude)
+    {
+        this.custo = custo - (custo * planoDeSaude.desconto());
+    }
+
     @Override
     public String getID() {
         return id;
     }
     @Override
     public String paraDado() {
-        return String.join(",", id, paciente.getID(), medico.getID(), data.format(FORMATO_TEMPO), String.valueOf(quarto), String.valueOf(custo));
+        return String.join(",", id, paciente.getID(), medico.getID(), data.format(FORMATO_CSV), String.valueOf(quarto), String.valueOf(custo));
     }
 
     public static Internacao converterDado(String line)
     {
         String[] partes = line.split(",");
-        return new Internacao(Paciente.converterID(partes[0]), Medico.converterID(partes[1]), LocalDateTime.parse(partes[2], FORMATO_TEMPO), Integer.parseInt(partes[3]), Double.parseDouble(partes[4]));
+        return new Internacao(Paciente.converterID(partes[0]), Medico.converterID(partes[1]), LocalDateTime.parse(partes[2], FORMATO_CSV), Integer.parseInt(partes[3]), Double.parseDouble(partes[4]));
     }
 
     public static Internacao converterID(String id)

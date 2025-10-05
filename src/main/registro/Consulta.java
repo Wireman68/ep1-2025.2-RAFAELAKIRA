@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Consulta implements Entidade
 {
-    private static final DateTimeFormatter FORMATO_TEMPO = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm");
+    private static final DateTimeFormatter FORMATO_CSV = DateTimeFormatter.ofPattern("ddMMyyyyHHmm");
 
     private final Paciente paciente;
     private final String id;
@@ -25,17 +25,17 @@ public class Consulta implements Entidade
         this.medico = medico;
         this.data = data;
         this.status = 0;
-        this.id =  paciente.getID() + medico.getID() + data;
+        this.id =  paciente.getID() + medico.getID() + data.format(FORMATO_CSV);
         if(paciente instanceof  PacienteEspecial pacienteEspecial)
         {
-            if(medico.getCustoConsulta() - pacienteEspecial.getDescontoTotal() < 0)
+            if(medico.getCustoConsulta() - (medico.getCustoConsulta() * pacienteEspecial.getDescontoTotal()) < 0)
             {
                 this.custo = 0;
             }
 
             else
             {
-                this.custo = medico.getCustoConsulta() - pacienteEspecial.getDescontoTotal();
+                this.custo = medico.getCustoConsulta() - (medico.getCustoConsulta() * pacienteEspecial.getDescontoTotal());
             }
         }
         else
@@ -52,16 +52,6 @@ public class Consulta implements Entidade
     public void setStatus(int status)
     {
         this.status = status;
-    }
-
-    public void terminar()
-    {
-        this.status = 1;
-    }
-
-    public void cancelar()
-    {
-        this.status = 2;
     }
 
     public Paciente getPaciente() {
@@ -85,7 +75,7 @@ public class Consulta implements Entidade
 
     @Override
     public String paraDado() {
-        return String.join(",", paciente.getNome(), medico.getNome(), data.format(FORMATO_TEMPO));
+        return String.join(",", paciente.getNome(), medico.getNome(), data.format(FORMATO_CSV));
     }
 
     @Override
@@ -95,7 +85,7 @@ public class Consulta implements Entidade
 
     public static Consulta converterDado(String line) {
         String[] partes = line.split(",");
-        return new Consulta(Paciente.converterID(partes[0]), Medico.converterID(partes[1]), LocalDateTime.parse(partes[2], FORMATO_TEMPO));
+        return new Consulta(Paciente.converterID(partes[0]), Medico.converterID(partes[1]), LocalDateTime.parse(partes[2], FORMATO_CSV));
     }
 
     public static Consulta converterID(String id)

@@ -26,6 +26,6 @@ public class PacienteEspecial extends Paciente
     {
         if(planosDeSaude == null || planosDeSaude.isEmpty()) return 0.0;
 
-        return planosDeSaude.stream().mapToDouble(PlanoDeSaude::desconto).sum();
+        return planosDeSaude.stream().mapToDouble(PlanoDeSaude::desconto).sum() * (this.getIdade() >= 60 ? 1.5 : 1);
     }
 }

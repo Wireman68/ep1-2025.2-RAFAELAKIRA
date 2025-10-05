@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class Medico implements Entidade
 {
-    private static final DateTimeFormatter FORMATO_TEMPO = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm");
+    private static final DateTimeFormatter FORMATO_CSV = DateTimeFormatter.ofPattern("ddMMyyyyHHmm");
 
     private final String nome;
     private final String crm;
@@ -41,9 +41,18 @@ public class Medico implements Entidade
         return crm;
     }
 
+    public List<Especialidade> getEspecialidades()
+    {
+        return especialidades;
+    }
+
     public void adicionarEspecialidade(Especialidade especialidade)
     {
         especialidades.add(especialidade);
+    }
+
+    public Map<LocalDateTime, Boolean> getCalendarioConsulta() {
+        return calendarioConsulta;
     }
 
     @Override
@@ -51,7 +60,7 @@ public class Medico implements Entidade
         String linhaEspecialidade = especialidades.stream().map(Especialidade::name).collect(Collectors.joining(";"));
 
         String linhaCalendario = calendarioConsulta.entrySet().stream()
-                .map(entry -> entry.getKey() + ":" + (entry.getValue() ? "disponivel" : "ocupado"))
+                .map(entry -> entry.getKey().format(FORMATO_CSV) + ":" + (entry.getValue() ? "disponivel" : "ocupado"))
                 .collect(Collectors.joining(";"));
 
         return String.join(",", nome, String.valueOf(crm), linhaEspecialidade, linhaCalendario);
@@ -88,6 +97,11 @@ public class Medico implements Entidade
         else throw new ConsultaException("Data não está disponível.");
     }
 
+    public void setDisponivel(LocalDateTime data, boolean disponivel)
+    {
+        calendarioConsulta.put(data, disponivel);
+    }
+
     public double getCustoConsulta() {
         return custoConsulta;
     }
@@ -106,7 +120,7 @@ public class Medico implements Entidade
         if (partes.length > 3 && !partes[3].isBlank()) {
             for (String s : partes[3].split(";")) {
                 String[] subPartes = s.split(":");
-                LocalDateTime horario = LocalDateTime.parse(subPartes[0], FORMATO_TEMPO);
+                LocalDateTime horario = LocalDateTime.parse(subPartes[0], FORMATO_CSV);
                 boolean disponivel = subPartes[1].equals("disponivel");
                 medico.calendarioConsulta.put(horario, disponivel);
             }

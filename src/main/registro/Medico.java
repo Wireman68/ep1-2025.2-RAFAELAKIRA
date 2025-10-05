@@ -20,6 +20,8 @@ public class Medico implements Entidade
     private List<Especialidade> especialidades;
 
     private double custoConsulta;
+
+    //TRUE = DISPONIVEL, FALSE = OCUPADO
     private Map<LocalDateTime, Boolean> calendarioConsulta;
 
     public Medico(String nome, String crm, List<Especialidade> especialidades)
@@ -72,9 +74,16 @@ public class Medico implements Entidade
 
     public void agendar(LocalDateTime data) throws ConsultaException
     {
-        if(calendarioConsulta.containsKey(data) && calendarioConsulta.get(data))
+        if(calendarioConsulta.containsKey(data))
         {
-            calendarioConsulta.put(data, false);
+            if(calendarioConsulta.containsValue(false))
+            {
+                throw new ConsultaException("Data já está agendada com este médico.");
+            }
+            if(calendarioConsulta.get(data))
+            {
+                calendarioConsulta.put(data, false);
+            }
         }
         else throw new ConsultaException("Data não está disponível.");
     }

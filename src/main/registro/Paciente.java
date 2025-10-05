@@ -81,6 +81,12 @@ public class Paciente implements Entidade
         consultas.add(consulta);
     }
 
+    public void adicionarInternacao(Internacao internacao)
+    {
+        internacoes.add(internacao);
+        setInternado(true);
+    }
+
     public boolean estaInternado() {
         return internado;
     }

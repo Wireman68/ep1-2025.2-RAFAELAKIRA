@@ -15,8 +15,10 @@ public class Internacao implements Entidade
     private final String id;
     private Medico medico;
     private LocalDateTime data;
+    private LocalDateTime dataDeSaida;
     private int quarto;
     private double custo;
+    private boolean status;
 
     public Internacao(Paciente paciente, Medico medico, LocalDateTime dataDeEntrada, int quarto, double custo)
     {
@@ -25,6 +27,7 @@ public class Internacao implements Entidade
         this.data = dataDeEntrada;
         this.quarto = quarto;
         this.custo = custo;
+        this.status = true;
         this.id = paciente.getID().charAt(0)
                 + paciente.getID().charAt(1)
                 + paciente.getID().charAt(2)
@@ -32,6 +35,30 @@ public class Internacao implements Entidade
                 + medico.getID().charAt(1)
                 + medico.getID().charAt(2)
                 + data.toString() + quarto + custo;
+    }
+
+    public Paciente getPaciente() {
+        return paciente;
+    }
+
+    public Medico getMedico() {
+        return medico;
+    }
+
+    public int getQuarto() {
+        return quarto;
+    }
+
+    public boolean getStatus() {
+        return status;
+    }
+
+    public LocalDateTime getDataDeSaida() {
+        return dataDeSaida;
+    }
+
+    public void setDataDeSaida(LocalDateTime dataDeSaida) {
+        this.dataDeSaida = dataDeSaida;
     }
 
     @Override

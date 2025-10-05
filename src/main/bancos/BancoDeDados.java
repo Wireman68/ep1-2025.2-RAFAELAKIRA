@@ -33,7 +33,7 @@ public class BancoDeDados
         return internacoes;
     }
 
-    public Set<PlanoDeSaude> getPlanoDeSaudes() {
+    public Set<PlanoDeSaude> getPlanos() {
         return planoDeSaudes;
     }
 
@@ -92,24 +92,14 @@ public class BancoDeDados
         }
     }
 
-    private <T extends Entidade> void checarRegistro(T entidade, Collection<T> entidades, int i, boolean inicializacao)
+    private <T extends Entidade> void checarRegistro(T entidade, Collection<T> entidades, int i, boolean inicializacao) throws IllegalArgumentException
     {
-        if(entidades.contains(entidade)) throw new IllegalArgumentException("Nao pode ter uma copia de " + entidade.toString() + ".");
-
-        entidades.forEach(e ->
+        for(T e : entidades)
         {
-            if(e.getID() == entidade.getID()) throw new IllegalArgumentException("Nao pode ter uma copia de ID de " + entidade.getID() + ".");
-        });
+            if(e.equals(entidade) || e.getID().equals(entidade.getID())) throw new IllegalArgumentException("Nao pode ter uma copia de " + entidade + ".");
+        }
 
         entidades.add(entidade);
-
-        if(!inicializacao) {
-            try (FileWriter writer = new FileWriter(DIRETORIO + "/" + NOMEBANCOS[i] + ".csv", true)) {
-                writer.write(entidade.paraDado() + "\n");
-            } catch (IOException e) {
-                System.err.println("Erro tentando salvar " + entidade.getClass().getSimpleName() + " dentro do sistema: " + e.getMessage());
-            }
-        }
     }
 
     public void remover(Entidade entidade)

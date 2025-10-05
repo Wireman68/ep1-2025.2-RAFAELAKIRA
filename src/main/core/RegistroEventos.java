@@ -99,6 +99,47 @@ public class RegistroEventos
         }
     }
 
+    public static void salvarDeferidos(BancoDeDados db)
+    {
+        resetBancoDeDados();
+        File f = new File(DIRETORIO);
+        if(!f.exists()) f.mkdirs();
+
+        for(String s : NOMEBANCOS) {
+            File file = new File(f, s + ".csv");
+
+            if (!file.exists()) {
+                try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
+                    switch (s) {
+                        case "pacientes" -> {
+                            writer.println("cpf,nome,idade,historicoConsulta,historicaInternacao");
+                            db.getPacientes().forEach(e -> writer.println(e.paraDado() + "\n"));
+                        }
+                        case "medicos" -> {
+                            writer.println("crm,nome,especialidades,custoConsulta");
+                            db.getMedicos().forEach(e -> writer.println(e.paraDado() + "\n"));
+                        }
+                        case "consultas" -> {
+                            writer.println("IDpaciente,IDmedico,data,");
+                            db.getConsultas().forEach(e -> writer.println(e.paraDado() + "\n"));
+                        }
+                        case "internacoes" -> {
+                            writer.println("IDpaciente,IDmedico,data");
+                            db.getInternacoes().forEach(e -> writer.println(e.paraDado() + "\n"));
+                        }
+                        case "planos" -> {
+                            writer.println("nome,plano,dataDeValidade,desconto");
+                            db.getPlanos().forEach(e -> writer.println(e.paraDado() + "\n"));
+                        }
+
+                    }
+                } catch (IOException e) {
+                    System.out.println("Error:" + e.getMessage());
+                }
+            }
+        }
+    }
+
     public static void registrarConsulta(BancoDeDados db, Consulta c)
     {
         db.registrar(c, false);

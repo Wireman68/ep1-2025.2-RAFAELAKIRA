@@ -3,11 +3,14 @@ package main.bancos;
 import main.registro.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class BancoDeDados
 {
     private static final String DIRETORIO = "resources/banks";
     private static final String[] NOMEBANCOS = {"pacientes", "medicos", "consultas", "internacoes", "planos"};
+    private static final int[] QUARTOS =
+            {101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310};
 
     protected List<Paciente> pacientes = new ArrayList<>();
     protected List<Medico> medicos = new ArrayList<>();
@@ -95,6 +98,18 @@ public class BancoDeDados
         }
 
         return null;
+    }
+
+    public int[] getQuartosDisponiveis() {
+
+        Set<Integer> quartosOcupados = this.getInternacoes().stream()
+                .filter(Internacao::getStatus)
+                .map(Internacao::getQuarto)
+                .collect(Collectors.toSet());
+
+        return Arrays.stream(QUARTOS)
+                .filter(q -> !quartosOcupados.contains(q))
+                .toArray();
     }
 
     public void registrar(Entidade entidade, boolean inicializacao) throws IllegalArgumentException

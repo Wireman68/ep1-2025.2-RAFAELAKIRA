@@ -2,6 +2,7 @@ package main.core;
 
 import main.bancos.BancoDeDados;
 import main.registro.*;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -58,13 +59,16 @@ public class RegistroComandos
         }
     }
 
-    public static List<Medico> procurarDisponivel(BancoDeDados db, Optional<LocalDateTime> data, Optional<String> especialidade)
+    public static List<Medico> procurarDisponivel(BancoDeDados db, @Nullable LocalDateTime data, @Nullable Especialidade especialidade)
     {
         List<Medico> medicos = db.getMedicos();
 
         return medicos.stream()
-                .filter(m -> especialidade.map(e -> m.getEspecialidades().contains(e)).orElse(true))
-                .filter(m -> data.map(d -> !m.getCalendarioConsulta().getOrDefault(d, false)).orElse(true))
+                .filter(m -> especialidade == null || m.getEspecialidades().contains(especialidade))
+                .filter(m -> {
+                    if (data == null) return true;
+                    return !m.getCalendarioConsulta().getOrDefault(data, true);
+                })
                 .toList();
     }
 

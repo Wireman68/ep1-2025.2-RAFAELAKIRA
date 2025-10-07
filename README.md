@@ -22,6 +22,18 @@ Desenvolvimento de um sistema de gerenciamento hospitalar utilizando os conceito
 
 ## Instruções para Compilação e Execução
 
+0. **Instalar Maven**
+   ### O Maven é utilizado tanto para compilar um .jar executável com facilidade, quanto para adicionar dependências de plugins/bibliotecas externas usadas pelo programa.
+   - Entre no link: https://maven.apache.org/download.cgi
+   - Baixe o "Binary zip archive" da versão mais recente do Maven.
+   - Extraia o arquivo zip em um diretório único (Ex: C:\Program Files\Apache\Maven\apache-maven-[VERSAO]\
+   - Aperte Windows+R e digite sysdm.cpl
+   - Vá em Avançado -> Variáveis de ambiente...
+   - Em variáveis de sistema, clique em Novo...
+   - O nome da variável será MAVEN_HOME, e o valor será o diretório onde você extraiu o arquivo zip.
+   - Voltando às variáveis de sistema, clique em Path, e clique Editar...
+   - Clique em Novo, e digite %MAVEN_HOME%\bin, e clique em OK para fechar tudo.
+
 1. **Compilação:**  
 
    ### Pré requisitos de compilação:

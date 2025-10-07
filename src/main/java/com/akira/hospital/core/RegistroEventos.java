@@ -139,7 +139,7 @@ public class RegistroEventos
                             db.getConsultas().forEach(e -> writer.println(e.paraDado()));
                         }
                         case "internacoes" -> {
-                            writer.println("IDpaciente,IDmedico,data");
+                            writer.println("IDpaciente,IDmedico,data,quarto,custo");
                             db.getInternacoes().forEach(e -> writer.println(e.paraDado()));
                         }
                         case "planos" -> {

@@ -66,7 +66,7 @@ public class Medico implements Entidade
                 .map(entry -> entry.getKey().format(FORMATO_CSV) + ":" + (entry.getValue() ? "disponivel" : "ocupado"))
                 .collect(Collectors.joining(";"));
 
-        return String.join(",", nome, String.valueOf(crm), linhaEspecialidade, String.valueOf(custoConsulta), linhaCalendario);
+        return String.join(",", String.valueOf(crm), nome, linhaEspecialidade, String.valueOf(custoConsulta), linhaCalendario);
     }
 
     @Override
@@ -119,7 +119,7 @@ public class Medico implements Entidade
         String[] linhaEspecialidades = partes[2].split(";");
         List<Especialidade> tempEspecialidade = Arrays.stream(linhaEspecialidades).map(String::trim).map(Especialidade::valueOf).toList();
         Especialidade especialidade1 = tempEspecialidade.getFirst();
-        Medico medico = new Medico(partes[0], partes[1], especialidade1, Double.parseDouble(partes[3]));
+        Medico medico = new Medico(partes[1], partes[0], especialidade1, Double.parseDouble(partes[3]));
         tempEspecialidade.stream().skip(1).toList().forEach(medico::adicionarEspecialidade);
 
         if (partes.length > 4 && !partes[4].isBlank()) {

@@ -30,7 +30,7 @@ public class GUI
     public static void criarTerminal()
     {
         JFrame frame = new JFrame("SGH - FCTE");
-        frame.setBackground(Color.BLACK);
+        frame.getContentPane().setBackground(Color.BLACK);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
@@ -47,12 +47,13 @@ public class GUI
 
         textField.addActionListener(e -> {
             String input = textField.getText();
-            textField.setText("");
             INPUT_DEFERIDO.offer(input);
+            textField.setText("");
         });
 
-        frame.setSize(720, 480);
+        frame.setSize(1920, 1080);
         frame.setVisible(true);
+        frame.setBackground(Color.black);
         textField.requestFocusInWindow();
 
         System.setOut(new PrintStream(new OutputStreamTerminal(textArea)));

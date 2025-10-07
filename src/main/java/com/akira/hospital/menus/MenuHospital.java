@@ -9,14 +9,20 @@ public class MenuHospital
         System.out.println(string);
     }
 
-    public static void abertura()
+    public static void carregando()
     {
         try {
-            GUI.cls();
-            Thread.sleep(50);
             imp("Carregando dados");
             imp("...");
-            Thread.sleep(1000);
+            Thread.sleep(5000);
+        } catch(InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void abertura()
+    {
             GUI.cls();
             imp("======================");
             imp("Bem vindo ao SGH FCTE!");
@@ -30,10 +36,6 @@ public class MenuHospital
             imp("6 - Imprimir relatório");
             imp("7 - Outros");
             imp("0 - Finalizar programa");
-        } catch(InterruptedException e)
-        {
-            e.printStackTrace();
-        }
     }
 
     public static void menuPaciente()
@@ -141,7 +143,8 @@ public class MenuHospital
         imp("======================");
         imp("1 - Remover paciente");
         imp("2 - Remover médico");
-        imp("1 - Remover plano de saúde");
+        imp("3 - Remover plano de saúde");
+        imp("0 - Voltar");
         } catch(InterruptedException e)
         {
             e.printStackTrace();

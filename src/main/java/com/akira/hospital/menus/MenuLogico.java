@@ -21,6 +21,7 @@ public class MenuLogico
 
     public static void menu(BancoDeDados db)
     {
+        MenuHospital.carregando();
         boolean menu1 = true;
 
         while(menu1) {
@@ -77,7 +78,6 @@ public class MenuLogico
                     while(menum) {
                         MenuHospital.menuMedico();
                         int i = GUI.nextInt();
-                        GUI.nextLine();
                         switch (i) {
                             case 1 -> {
                                 imp("Digite o nome completo do médico.");
@@ -141,7 +141,6 @@ public class MenuLogico
                     while (menuc) {
                         MenuHospital.menuConsulta();
                         int i = GUI.nextInt();
-                        GUI.nextLine();
                         switch (i) {
                             case 1 -> {
                                 PlanoDeSaude plano = null;
@@ -268,7 +267,6 @@ public class MenuLogico
                     while(menui) {
                         MenuHospital.menuInternacao();
                         int i = GUI.nextInt();
-                        GUI.nextLine();
                         switch (i) {
                             case 1 -> {
                                 imp("Digite o cpf do paciente. (XXX.XXX.XXX-XX)");
@@ -315,7 +313,6 @@ public class MenuLogico
                     while(menup) {
                         MenuHospital.menuPlano();
                         int i = GUI.nextInt();
-                        GUI.nextLine();
                         switch(i) {
                             case 1 -> {
                                 imp("Digite o nome do plano.");
@@ -370,7 +367,6 @@ public class MenuLogico
                     while(menur) {
                         MenuHospital.menuRelatorio();
                         int i = GUI.nextInt();
-                        GUI.nextLine();
                         switch(i)
                         {
                             case 1 -> {
@@ -421,7 +417,6 @@ public class MenuLogico
                     {
                         MenuHospital.menuOutros();
                         int i = GUI.nextInt();
-                        GUI.nextLine();
                         switch(i) {
                             case 1 -> {
                                 imp("Digite o cpf do paciente. (XXX.XXX.XXX-XX)");

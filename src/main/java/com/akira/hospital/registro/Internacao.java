@@ -110,13 +110,16 @@ public class Internacao implements Entidade
     }
     @Override
     public String paraDado() {
-        return String.join(",", id, paciente.getID(), medico.getID(), data.format(FORMATO_CSV), String.valueOf(quarto), String.valueOf(custo));
+        return String.join(",", id, paciente.getID(), medico.getID(), data.format(FORMATO_CSV), String.valueOf(quarto), String.valueOf(custo), status ? "ANDAMENTO" : "FINALIZADA");
     }
 
     public static Internacao converterDado(String line)
     {
         String[] partes = line.split(",");
-        return new Internacao(Paciente.converterID(partes[0]), Medico.converterID(partes[1]), LocalDateTime.parse(partes[2], FORMATO_CSV), Integer.parseInt(partes[3]), Double.parseDouble(partes[4]));
+        Internacao internacao = new Internacao(Paciente.converterID(partes[1]), Medico.converterID(partes[2]), LocalDateTime.parse(partes[3], FORMATO_CSV), Integer.parseInt(partes[4]), Double.parseDouble(partes[5]));
+        internacao.setStatus(partes[5].equals("ANDAMENTO"));
+
+        return internacao;
     }
 
     public static Internacao converterID(String id)

@@ -1,6 +1,8 @@
 package com.akira.hospital.registro;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -124,7 +126,10 @@ public class Internacao implements Entidade
 
     public static Internacao converterID(String id)
     {
-        try (BufferedReader reader = new BufferedReader(Files.newBufferedReader(Paths.get("internacoes.csv"))))
+        File f = new File("resources/banks");
+        if(!f.exists()) f.mkdirs();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(new File(f, "internacoes.csv"))))
         {
             reader.readLine();
             String line;

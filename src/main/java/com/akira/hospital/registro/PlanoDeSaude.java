@@ -1,6 +1,8 @@
 package com.akira.hospital.registro;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -32,7 +34,10 @@ public record PlanoDeSaude(String nome, int plano, YearMonth dataDeValidade, dou
 
     public static PlanoDeSaude converterID(String id)
     {
-        try (BufferedReader reader = new BufferedReader(Files.newBufferedReader(Paths.get("planos.csv"))))
+        File f = new File("resources/banks");
+        if(!f.exists()) f.mkdirs();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(new File(f, "planos.csv"))))
         {
             reader.readLine();
             String line;

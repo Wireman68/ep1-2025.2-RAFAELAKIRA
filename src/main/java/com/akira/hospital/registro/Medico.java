@@ -3,6 +3,8 @@ package com.akira.hospital.registro;
 import com.akira.hospital.core.ConsultaException;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -136,14 +138,17 @@ public class Medico implements Entidade
 
     public static Medico converterID(String id)
     {
-        try (BufferedReader reader = new BufferedReader(Files.newBufferedReader(Paths.get("medicos.csv"))))
+        File f = new File("resources/banks");
+        if(!f.exists()) f.mkdirs();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(new File(f, "medicos.csv"))))
         {
             reader.readLine();
             String line;
             while((line = reader.readLine()) != null)
             {
                 Medico medic = converterDado(line);
-                if(medic.getID() == id) return medic;
+                if(medic.getID().equals(id)) return medic;
             }
         }
         catch (IOException e)

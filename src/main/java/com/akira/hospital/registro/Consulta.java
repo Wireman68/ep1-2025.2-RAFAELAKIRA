@@ -1,6 +1,8 @@
 package com.akira.hospital.registro;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -110,12 +112,19 @@ public class Consulta implements Entidade
 
     public static Consulta converterDado(String line) {
         String[] partes = line.split(",");
-        return new Consulta(Paciente.converterID(partes[0]), Medico.converterID(partes[1]), LocalDateTime.parse(partes[2], FORMATO_CSV), partes[3]);
+        Paciente pacienteC = Paciente.converterID(partes[0]);
+        Medico medicoC = Medico.converterID(partes[1]);
+        Consulta consulta = new Consulta(pacienteC, medicoC, LocalDateTime.parse(partes[2], FORMATO_CSV), partes[4]);
+        consulta.status = Integer.parseInt(partes[3]);
+        return consulta;
     }
 
     public static Consulta converterID(String id)
     {
-        try (BufferedReader reader = new BufferedReader(Files.newBufferedReader(Paths.get("consultas.csv"))))
+        File f = new File("resources/banks");
+        if(!f.exists()) f.mkdirs();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(new File(f, "consultas.csv"))))
         {
             reader.readLine();
             String line;

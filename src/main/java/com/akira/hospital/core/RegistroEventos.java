@@ -52,35 +52,94 @@ public class RegistroEventos
                     System.out.println("Error:" + e.getMessage());
                 }
             }
-
-            try (BufferedReader reader = new BufferedReader(new FileReader(file)))
-            {
-                reader.readLine();
-                String line;
-                while((line = reader.readLine()) != null)
-                {
-                    if(line.trim().isEmpty()) continue;
-                    switch(s)
-                    {
-                        case "pacientes" -> db.registrar(Paciente.converterDado(line), true);
-                        case "medicos" -> db.registrar(Medico.converterDado(line), true);
-                        case "consultas" -> db.registrar(Consulta.converterDado(line), true);
-                        case "internacoes" -> db.registrar(Internacao.converterDado(line), true);
-                        case "planos" -> db.registrar(PlanoDeSaude.converterDado(line), true);
-                        case "especiais" -> PacienteEspecial.converterPlano(line, db);
-                    }
-
-                    for(Paciente paciente : db.getPacientes())
-                    {
-                        paciente.getConsultas().clear();
-                        paciente.getInternacoes().clear();
-                        paciente.converterHistoricos(line);
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(new File(f, "pacientes.csv")))) {
+            reader.readLine();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+                db.registrar(Paciente.converterDado(line), true);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(new File(f, "medicos.csv")))) {
+            reader.readLine();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+                db.registrar(Medico.converterDado(line), true);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(new File(f, "consultas.csv")))) {
+            reader.readLine();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+                db.registrar(Consulta.converterDado(line), true);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(new File(f, "internacoes.csv")))) {
+            reader.readLine();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+                db.registrar(Internacao.converterDado(line), true);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(new File(f, "planos.csv")))) {
+            reader.readLine();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+                db.registrar(PlanoDeSaude.converterDado(line), true);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(new File(f, "especiais.csv")))) {
+            reader.readLine();
+            String line;
+
+            while((line = reader.readLine()) != null)
+            {
+                if (line.trim().isEmpty()) continue;
+                PacienteEspecial.converterPlano(line, db);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+            for(Paciente paciente : db.getPacientes())
+            {
+                paciente.getConsultas().clear();
+                paciente.getInternacoes().clear();
+                for(Consulta consulta : db.getConsultas())
+                {
+                    if(consulta.getPaciente().equals(paciente)) paciente.getConsultas().add(consulta);
+                }
+                for(Internacao internacao : db.getInternacoes())
+                {
+                    if(internacao.getPaciente().equals(paciente)) paciente.getInternacoes().add(internacao);
+                }
+            }
     }
 
     public static void registrarPlanoEspecial(BancoDeDados db)

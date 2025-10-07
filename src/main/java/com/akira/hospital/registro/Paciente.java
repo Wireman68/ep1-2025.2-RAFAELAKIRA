@@ -1,6 +1,10 @@
 package com.akira.hospital.registro;
 
+import com.akira.hospital.bancos.BancoDeDados;
+
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -109,24 +113,38 @@ public class Paciente implements Entidade
         return new Paciente(linha[1], linha[0], LocalDate.parse(linha[2], FORMATO_DATA));
     }
 
-    public void converterHistoricos(String line)
+    public void converterHistoricos(BancoDeDados db, String line)
     {
         String[] linha = line.split(",");
 
         List<Consulta> tempConsultas = new ArrayList<>();
         if (linha.length > 3 && !linha[3].isBlank()) {
             for (String s : linha[3].split(";")) {
-                Consulta consulta = Consulta.converterID(s);
-                if (consulta != null) tempConsultas.add(consulta);
+                if(!db.getConsultas().contains(Consulta.converterID(s))) {
+                    Consulta consulta = Consulta.converterID(s);
+                    if (consulta != null) tempConsultas.add(consulta);
+                }
             }
+        }
+
+        for(Consulta consulta : db.getConsultas())
+        {
+            if(consulta.getPaciente().equals(this)) tempConsultas.add(consulta);
         }
 
         List<Internacao> tempInternacoes = new ArrayList<>();
         if (linha.length > 4 && !linha[4].isBlank()) {
             for (String s : linha[4].split(";")) {
-                Internacao internacao = Internacao.converterID(s);
-                if (internacao != null) tempInternacoes.add(internacao);
+                if (!db.getInternacoes().contains(Internacao.converterID(s))) {
+                    Internacao internacao = Internacao.converterID(s);
+                    if (internacao != null) tempInternacoes.add(internacao);
+                }
             }
+        }
+
+        for(Internacao internacao : db.getInternacoes())
+        {
+            if(internacao.getPaciente().equals(this)) tempInternacoes.add(internacao);
         }
 
         this.setConsultas(tempConsultas);
@@ -135,7 +153,10 @@ public class Paciente implements Entidade
 
     public static Paciente converterID(String id)
     {
-        try (BufferedReader reader = new BufferedReader(Files.newBufferedReader(Paths.get("pacientes.csv"))))
+        File f = new File("resources/banks");
+        if(!f.exists()) f.mkdirs();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(new File(f, "pacientes.csv"))))
         {
             reader.readLine();
             String line;

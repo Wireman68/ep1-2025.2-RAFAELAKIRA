@@ -18,17 +18,20 @@ public class Medico implements Entidade
     private final String nome;
     private final String crm;
     private List<Especialidade> especialidades;
+    private int consultasConcluidas = 0;
 
     private double custoConsulta;
 
     //TRUE = DISPONIVEL, FALSE = OCUPADO
     private Map<LocalDateTime, Boolean> calendarioConsulta;
 
-    public Medico(String nome, String crm, List<Especialidade> especialidades)
+    public Medico(String nome, String crm, Especialidade especialidadePrimaria, double custoConsulta)
     {
         this.nome = nome;
         this.crm = crm;
-        this.especialidades = especialidades;
+        this.especialidades = new ArrayList<>();
+        this.especialidades.add(especialidadePrimaria);
+        this.custoConsulta = custoConsulta;
         this.calendarioConsulta = new HashMap<>();
     }
 
@@ -63,7 +66,7 @@ public class Medico implements Entidade
                 .map(entry -> entry.getKey().format(FORMATO_CSV) + ":" + (entry.getValue() ? "disponivel" : "ocupado"))
                 .collect(Collectors.joining(";"));
 
-        return String.join(",", nome, String.valueOf(crm), linhaEspecialidade, linhaCalendario);
+        return String.join(",", nome, String.valueOf(crm), linhaEspecialidade, String.valueOf(custoConsulta), linhaCalendario);
     }
 
     @Override
@@ -115,10 +118,12 @@ public class Medico implements Entidade
 
         String[] linhaEspecialidades = partes[2].split(";");
         List<Especialidade> tempEspecialidade = Arrays.stream(linhaEspecialidades).map(String::trim).map(Especialidade::valueOf).toList();
-        Medico medico = new Medico(partes[0], partes[1], tempEspecialidade);
+        Especialidade especialidade1 = tempEspecialidade.getFirst();
+        Medico medico = new Medico(partes[0], partes[1], especialidade1, Double.parseDouble(partes[3]));
+        tempEspecialidade.stream().skip(1).toList().forEach(medico::adicionarEspecialidade);
 
-        if (partes.length > 3 && !partes[3].isBlank()) {
-            for (String s : partes[3].split(";")) {
+        if (partes.length > 4 && !partes[4].isBlank()) {
+            for (String s : partes[4].split(";")) {
                 String[] subPartes = s.split(":");
                 LocalDateTime horario = LocalDateTime.parse(subPartes[0], FORMATO_CSV);
                 boolean disponivel = subPartes[1].equals("disponivel");
@@ -147,5 +152,13 @@ public class Medico implements Entidade
         }
 
         return null;
+    }
+
+    public int getConsultasConcluidas() {
+        return consultasConcluidas;
+    }
+
+    public void adicionarConsultasConcluidas() {
+        this.consultasConcluidas = consultasConcluidas + 1;
     }
 }

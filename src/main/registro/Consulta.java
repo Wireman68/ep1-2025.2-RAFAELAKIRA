@@ -13,20 +13,23 @@ public class Consulta implements Entidade
 
     private final Paciente paciente;
     private final String id;
-    private Medico medico;
+    private final Medico medico;
+    private final String local;
     private LocalDateTime data;
     private double custo;
+    private final double salvo;
     // LEMBRETE: 0 = AGENDADO, 1 = COMPLETA, 2 = CANCELADA;
     private int status;
 
-    public Consulta(Paciente paciente, Medico medico, LocalDateTime data)
+    public Consulta(Paciente paciente, Medico medico, LocalDateTime data, String local)
     {
         this.paciente = paciente;
         this.medico = medico;
         this.data = data;
+        this.local = local;
         this.status = 0;
-        this.id =  paciente.getID() + medico.getID() + data.format(FORMATO_CSV);
-        if(paciente instanceof  PacienteEspecial pacienteEspecial)
+        this.id = paciente.getID() + medico.getID() + data.format(FORMATO_CSV);
+        if(paciente instanceof PacienteEspecial pacienteEspecial)
         {
             if(medico.getCustoConsulta() - (medico.getCustoConsulta() * pacienteEspecial.getDescontoTotal()) < 0)
             {
@@ -42,6 +45,8 @@ public class Consulta implements Entidade
         {
             this.custo = medico.getCustoConsulta();
         }
+
+        this.salvo = medico.getCustoConsulta() - custo;
     }
 
     public int getStatus()
@@ -52,6 +57,10 @@ public class Consulta implements Entidade
     public void setStatus(int status)
     {
         this.status = status;
+    }
+
+    public String getLocal() {
+        return local;
     }
 
     public Paciente getPaciente() {
@@ -68,6 +77,10 @@ public class Consulta implements Entidade
         return data;
     }
 
+    public void mudarData(LocalDateTime data) {
+        this.data = data;
+    }
+
     @Override
     public String getID() {
         return id;
@@ -75,7 +88,7 @@ public class Consulta implements Entidade
 
     @Override
     public String paraDado() {
-        return String.join(",", paciente.getNome(), medico.getNome(), data.format(FORMATO_CSV));
+        return String.join(",", paciente.getID(), medico.getID(), data.format(FORMATO_CSV), String.valueOf(status), local);
     }
 
     @Override
@@ -83,9 +96,21 @@ public class Consulta implements Entidade
 
     }
 
+    public double getCusto() {
+        return custo;
+    }
+
+    public void setCusto(double custo) {
+        this.custo = custo;
+    }
+
+    public double getSalvo() {
+        return salvo;
+    }
+
     public static Consulta converterDado(String line) {
         String[] partes = line.split(",");
-        return new Consulta(Paciente.converterID(partes[0]), Medico.converterID(partes[1]), LocalDateTime.parse(partes[2], FORMATO_CSV));
+        return new Consulta(Paciente.converterID(partes[0]), Medico.converterID(partes[1]), LocalDateTime.parse(partes[2], FORMATO_CSV), partes[3]);
     }
 
     public static Consulta converterID(String id)
@@ -97,7 +122,7 @@ public class Consulta implements Entidade
             while((line = reader.readLine()) != null)
             {
                 Consulta consulta = converterDado(line);
-                if(consulta.getID() == id) return consulta;
+                if(consulta.getID().equals(id)) return consulta;
             }
         }
         catch (IOException e)

@@ -13,11 +13,12 @@ public class Internacao implements Entidade
 
     private final Paciente paciente;
     private final String id;
-    private Medico medico;
-    private LocalDateTime data;
+    private final Medico medico;
+    private final LocalDateTime data;
     private LocalDateTime dataDeSaida;
     private int quarto;
     private double custo;
+    private final double salvo;
     //TRUE = EXISTE, FALSE = FINALIZADA / CANCELADA
     private boolean status;
 
@@ -27,7 +28,23 @@ public class Internacao implements Entidade
         this.medico = medico;
         this.data = dataDeEntrada;
         this.quarto = quarto;
-        this.custo = custo;
+        if(paciente instanceof PacienteEspecial pacienteEspecial)
+        {
+            if(custo - (custo * pacienteEspecial.getDescontoTotal()) < 0)
+            {
+                this.custo = 0;
+            }
+
+            else
+            {
+                this.custo = custo - (custo * pacienteEspecial.getDescontoTotal());
+            }
+        }
+        else
+        {
+            this.custo = custo;
+        }
+        this.salvo = custo - this.custo;
         this.status = true;
         this.id = paciente.getID().charAt(0)
                 + paciente.getID().charAt(1)
@@ -50,6 +67,10 @@ public class Internacao implements Entidade
         return quarto;
     }
 
+    public void setQuarto(int quarto) {
+        this.quarto = quarto;
+    }
+
     public boolean getStatus() {
         return status;
     }
@@ -64,6 +85,14 @@ public class Internacao implements Entidade
 
     public LocalDateTime getDataDeSaida() {
         return dataDeSaida;
+    }
+
+    public double getCusto() {
+        return custo;
+    }
+
+    public double getSalvo() {
+        return salvo;
     }
 
     public void setDataDeSaida(LocalDateTime dataDeSaida) {
@@ -99,7 +128,7 @@ public class Internacao implements Entidade
             while((line = reader.readLine()) != null)
             {
                 Internacao internacao = converterDado(line);
-                if(internacao.getID() == id) return internacao;
+                if(internacao.getID().equals(id)) return internacao;
             }
         }
         catch (IOException e)

@@ -2,13 +2,12 @@ package main.bancos;
 
 import main.registro.*;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class BancoDeDados
 {
-    private static final String DIRETORIO = "resources/banks";
-    private static final String[] NOMEBANCOS = {"pacientes", "medicos", "consultas", "internacoes", "planos"};
     private static final int[] QUARTOS =
             {101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310};
 
@@ -59,10 +58,18 @@ public class BancoDeDados
     {
         for(Paciente p : pacientes)
         {
-            if(p.getID() == cpf) return p;
+            if(p.getID().equals(cpf)) return p;
         }
 
         return null;
+    }
+
+    public double getSalvoConsultas() {
+        return getConsultas().stream().mapToDouble(Consulta::getSalvo).sum();
+    }
+
+    public double getSalvoInternacoes() {
+        return getInternacoes().stream().mapToDouble(Internacao::getSalvo).sum();
     }
 
     public Medico getMedico(int i)
@@ -74,10 +81,18 @@ public class BancoDeDados
     {
         for(Medico m : medicos)
         {
-            if(m.getID() == crm) return m;
+            if(m.getID().equals(crm)) return m;
         }
 
         return null;
+    }
+
+    public Consulta getConsultaMedico(String crm)
+    {
+         return consultas.stream()
+                .filter(consulta -> consulta.getMedico().getID().equals(crm))
+                .toList()
+                .getFirst();
     }
 
     public PlanoDeSaude getPlano(String id)
@@ -99,6 +114,8 @@ public class BancoDeDados
 
         return null;
     }
+
+
 
     public int[] getQuartosDisponiveis() {
 
@@ -144,5 +161,109 @@ public class BancoDeDados
             case Consulta a -> consultas.remove(a);
             default -> throw new IllegalArgumentException("Entidade invalida");
         }
+    }
+
+
+
+    //Estatísticas
+
+    public double idadeMediaPacientes()
+    {
+        return pacientes.stream().mapToDouble(Paciente::getIdade).sum() / pacientes.size();
+    }
+
+    public double porcentagemEspeciais()
+    {
+        return (double) (pacientes.stream().filter(paciente -> paciente instanceof PacienteEspecial).toList().size() / pacientes.size()) * 100;
+    }
+
+    public int totalPacientes()
+    {
+        return pacientes.size();
+    }
+
+    public int totalMedicos()
+    {
+        return medicos.size();
+    }
+
+    public int totalPlanos()
+    {
+        return planoDeSaudes.size();
+    }
+
+    public int totalInternados()
+    {
+        return internacoes.stream().filter(Internacao::getStatus).toList().size();
+    }
+
+    public int consultasAgendadas()
+    {
+        return consultas.stream().filter(consulta -> consulta.getStatus() == 0).toList().size();
+    }
+
+    public Medico maisAtendimentos()
+    {
+        return consultas.stream()
+                .collect(Collectors.groupingBy(Consulta::getMedico, Collectors.counting()))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+    }
+
+    public Especialidade maisAtendimentosEspecialidade() {
+        return consultas.stream()
+                .flatMap(consulta -> consulta.getMedico().getEspecialidades().stream())
+                .collect(Collectors.groupingBy(e -> e, Collectors.counting()))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+    }
+
+    public Especialidade maisMedicosEspecialidade() {
+        Map<Especialidade, Long> quantidade = medicos.stream()
+                .flatMap(medico -> medico.getEspecialidades().stream())
+                .collect(Collectors.groupingBy(e -> e, Collectors.counting()));
+
+        return quantidade.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+    }
+
+    public Paciente maiorTempoInternado() {
+        Map<Paciente, Long> duracaoTotal = new HashMap<>();
+        for (Internacao internacao : internacoes) {
+            if (internacao.getDataDeSaida() != null) {
+                long duracao = Duration.between(internacao.getData(), internacao.getDataDeSaida()).toHours();
+                duracaoTotal.merge(internacao.getPaciente(), duracao, Long::sum);
+            }
+        }
+        return duracaoTotal.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+    }
+
+    public PlanoDeSaude planoMaisCadastrado() {
+
+        List<PacienteEspecial> pacienteEspeciais = pacientes.stream()
+                .filter(paciente -> paciente instanceof PacienteEspecial)
+                .map(paciente -> (PacienteEspecial) paciente)
+                .toList();
+
+        Map<PlanoDeSaude, Long> counts = new HashMap<>();
+        for (PacienteEspecial pacienteEspecial : pacienteEspeciais) {
+            for (PlanoDeSaude plano : pacienteEspecial.getPlanosDeSaude()) {
+                counts.merge(plano, 1L, Long::sum);
+            }
+        }
+
+        return counts.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
     }
 }

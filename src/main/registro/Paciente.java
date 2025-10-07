@@ -4,29 +4,38 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Paciente implements Entidade
 {
+    private static final DateTimeFormatter FORMATO_DATA = DateTimeFormatter.ofPattern("ddMMyyyy");
+
     private final String nome;
     private final String cpf;
 
-    private int idade;
+    private LocalDate nascimento;
     private boolean internado = false;
     private List<Consulta> consultas = new ArrayList<>();
     private List<Internacao> internacoes = new ArrayList<>();
 
-    public Paciente(String nome, String cpf, int idade)
+    public Paciente(String nome, String cpf, LocalDate nascimento)
     {
         this.nome = nome;
         this.cpf = cpf;
-        this.idade = idade;
+        this.nascimento = nascimento;
+    }
+
+    public LocalDate getNascimento() {
+        return nascimento;
     }
 
     public int getIdade() {
-        return idade;
+        return Period.between(nascimento, LocalDate.now()).getYears();
     }
 
     public String getNome() {
@@ -49,7 +58,7 @@ public class Paciente implements Entidade
                 .map(internacao -> String.valueOf(internacao.getID()))
                 .collect(Collectors.joining(";"));
 
-        return String.join(",", nome, cpf, String.valueOf(idade), linhaConsultas, linhaInternacoes);
+        return String.join(",", cpf, nome, nascimento.format(FORMATO_DATA), linhaConsultas, linhaInternacoes);
     }
 
     public List<Consulta> getConsultas() {
@@ -73,7 +82,7 @@ public class Paciente implements Entidade
     @Override
     public void displayDados()
     {
-        System.out.println("Nome: " + nome + ", CPF: " + cpf + ", idade: " + idade);
+        System.out.println("Nome: " + nome + ", CPF: " + cpf + ", idade: " + getIdade());
     }
 
     public void adicionarConsulta(Consulta consulta)
@@ -97,7 +106,7 @@ public class Paciente implements Entidade
 
     public static Paciente converterDado(String line) {
         String[] linha = line.split(",");
-        return new Paciente(linha[0], linha[1], Integer.parseInt(linha[2]));
+        return new Paciente(linha[1], linha[0], LocalDate.parse(linha[2], FORMATO_DATA));
     }
 
     public void converterHistoricos(String line)
@@ -133,7 +142,7 @@ public class Paciente implements Entidade
             while((line = reader.readLine()) != null)
             {
                 Paciente paciente = converterDado(line);
-                if(paciente.getID() == id) return paciente;
+                if(paciente.getID().equals(id)) return paciente;
             }
         }
         catch (IOException e)

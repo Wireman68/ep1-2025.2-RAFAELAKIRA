@@ -3,13 +3,13 @@ package main.menus;
 import main.bancos.BancoDeDados;
 import main.core.RegistroComandos;
 import main.core.RegistroEventos;
-import main.registro.Especialidade;
-import main.registro.Medico;
-import main.registro.Paciente;
-import main.registro.PacienteEspecial;
+import main.core.RegistroRelatorio;
+import main.registro.*;
 
+import java.io.FileWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +19,8 @@ import static main.menus.MenuHospital.imp;
 
 public class MenuLogico
 {
+    private static final DateTimeFormatter FORMATO_PRINT = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm");
+
     public static void menu(BancoDeDados db)
     {
         boolean menu1 = true;
@@ -48,7 +50,6 @@ public class MenuLogico
                                 Paciente paciente = new Paciente(nome, cpf, data);
                                 RegistroComandos.registrarPaciente(db, paciente);
                                 imp("Paciente cadastrado!");
-                                menup = false;
                             }
 
                             case 2 -> {
@@ -65,7 +66,6 @@ public class MenuLogico
                                     db.registrar(pacienteEspecial, false);
                                     imp("Plano do paciente aprimorado!");
                                 }
-                                menup = false;
                             }
 
                             case 0 ->
@@ -91,16 +91,14 @@ public class MenuLogico
                                 String crm = cs.nextLine();
                                 imp("Digite a especialidade principal do médico. Outras especialidades poderão ser registradas depois.");
                                 String esp = cs.nextLine();
+                                imp("Digite o custo de consulta desse médico, em R$.");
+                                double custo = cs.nextDouble();
 
                                 Especialidade especialidade = Especialidade.valueOf(esp.toUpperCase());
 
-                                List<Especialidade> l1 = new ArrayList<>();
-                                l1.add(especialidade);
-
-                                Medico medico = new Medico(nome, crm, l1);
+                                Medico medico = new Medico(nome, crm, especialidade, custo);
                                 RegistroComandos.registrarMedico(db, medico);
                                 imp("Médico cadastrado!");
-                                menum = false;
                             }
 
                             case 2 -> {
@@ -114,7 +112,6 @@ public class MenuLogico
                                 Especialidade especialidade = Especialidade.valueOf(esp.toUpperCase());
                                 medico.adicionarEspecialidade(especialidade);
                                 imp("Especialidade adicionada!");
-                                menum = false;
                             }
 
                             case 3 -> {
@@ -133,7 +130,6 @@ public class MenuLogico
                                 medico.adicionarDataConsulta(agenda);
 
                                 imp("Data adicionada!");
-                                menum = false;
                             }
 
                             case 0 ->
@@ -153,6 +149,7 @@ public class MenuLogico
                         cs.nextLine();
                         switch (i) {
                             case 1 -> {
+                                PlanoDeSaude plano = null;
                                 imp("Digite o cpf do paciente. (XXX.XXX.XXX-XX)");
                                 String cpf = cs.nextLine();
                                 imp("Digite o crm do médico.");
@@ -165,9 +162,11 @@ public class MenuLogico
 
                                 LocalDateTime horario = LocalDateTime.parse(data + hora, DateTimeFormatter.ofPattern("dd/MM/yyyyHH:mm"));
 
-                                RegistroComandos.agendarConsulta(db, cpf, crm, horario);
+                                imp("Informe o local desejado para a consulta.");
+                                String local = cs.nextLine();
+
+                                RegistroComandos.agendarConsulta(db, cpf, crm, horario, local);
                                 imp("Consulta agendada!");
-                                menuc = false;
                             }
 
                             case 2 -> {
@@ -237,12 +236,28 @@ public class MenuLogico
                             }
 
                             case 3 -> {
-                                imp("Digite o crm do médico.");
+                                imp("Digite o crm do médico responsável.");
                                 String crm = cs.nextLine();
-                                RegistroComandos.finalizarConsulta(db, crm);
+                                boolean f = RegistroComandos.finalizarConsulta(db, crm);
 
-                                imp("Consulta finalizada!");
-                                menuc = false;
+                                if(f)
+                                {
+                                    try {
+                                        imp("Consulta finalizada!");
+                                        imp("Criando folha para diagnóstico / prescrição...");
+                                        RegistroEventos.criarDiagnostico(db, crm);
+                                        Thread.sleep(3000);
+                                        imp("Folha criada com sucesso!");
+                                        imp("Para acessar e editar, vá em: resources/diagnostics/SEU CRM/CPF DO PACIENTE + DATA DA CONSULTA");
+                                    } catch (InterruptedException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                else
+                                {
+                                    imp("Consulta cancelada!");
+                                }
                             }
 
                             case 0 -> {
@@ -273,7 +288,6 @@ public class MenuLogico
                                 RegistroComandos.internarPaciente(db, cpf, crm, custo, quarto);
 
                                 imp("Paciente internado com sucesso!");
-                                menui = false;
                             }
 
                             case 2 -> {
@@ -282,7 +296,6 @@ public class MenuLogico
                                 RegistroComandos.liberarInternacao(db, cpf);
 
                                 imp("Paciente liberado!");
-                                menui = false;
                             }
 
                             case 3 -> {
@@ -291,7 +304,6 @@ public class MenuLogico
                                 {
                                     System.out.println(q);
                                 }
-                                menui = false;
                             }
 
                             case 0 ->
@@ -304,20 +316,176 @@ public class MenuLogico
                     }
                 }
                 case 5 -> {
-                    MenuHospital.menuPlano();
+                    boolean menup = true;
+                    while(menup) {
+                        MenuHospital.menuPlano();
+                        int i = cs.nextInt();
+                        cs.nextLine();
+                        switch(i) {
+                            case 1 -> {
+                                imp("Digite o nome do plano.");
+                                String nome = cs.nextLine();
+                                imp("Digite a data de validade do plano. (MM/AAA)");
+                                String dataS = cs.nextLine();
+                                YearMonth data = YearMonth.parse(dataS, DateTimeFormatter.ofPattern("MM/yyyy"));
+                                imp("Informe o desconto, em %, que este plano oferece.");
+                                double desconto = cs.nextDouble() / 100;
+
+                                for(int j = 0; j <= 3; j++)
+                                {
+                                    PlanoDeSaude planoDeSaude = new PlanoDeSaude(nome, j, data, desconto);
+                                    db.registrar(planoDeSaude, false);
+                                }
+
+                                imp("Planos de saúde, de bronze a platinum, do tipo " + nome + ", foram registrados!");
+                            }
+
+                            case 2 -> {
+                                imp("Digite o cpf do paciente. (XXX.XXX.XXX-XX)");
+                                String cpf = cs.nextLine();
+                                imp("Digite o ID do plano.");
+                                imp("(O ID do plano é NOME + NUMERO DE PLANO + ANO + MES, juntos)");
+                                String id = cs.nextLine();
+
+                                PlanoDeSaude planoDeSaude = db.getPlano(id);
+                                Paciente paciente = db.getPacienteId(cpf);
+
+                                if(paciente instanceof PacienteEspecial pacienteEspecial)
+                                {
+                                    pacienteEspecial.adicionarPlano(planoDeSaude);
+                                    imp("Paciente está dentro do plano " + planoDeSaude.nome() + "!");
+                                }
+                                else
+                                {
+                                    System.err.println("Erro: paciente não pode ter plano de saúde pois não é especial.");
+                                }
+                            }
+
+                            case 0 ->
+                            {
+                                menup = false;
+                            }
+
+                            default -> System.err.println("Caracter inválido.");
+                        }
+                    }
                 }
                 case 6 -> {
-                    MenuHospital.menuRelatorio();
+                    boolean menur = true;
+                    while(menur) {
+                        MenuHospital.menuRelatorio();
+                        int i = cs.nextInt();
+                        cs.nextLine();
+                        switch(i)
+                        {
+                            case 1 -> {
+                                RegistroRelatorio.escreverPaciente(db);
+                                imp("Relatório impresso!");
+                            }
+                            case 2 -> {
+                                RegistroRelatorio.escreverMedico(db);
+                                imp("Relatório impresso!");
+                            }
+                            case 3 -> {
+                                imp("(Para pular o filtro, pressione ENTER.)");
+                                imp("Digite o cpf do paciente. (XXX.XXX.XXX-XX)");
+                                String cpf = cs.nextLine().isEmpty() ? null : cs.nextLine();
+                                imp("Digite o crm do médico.");
+                                String crm = cs.nextLine().isEmpty() ? null : cs.nextLine();
+                                imp("Digite a especialidade desejada.");
+                                String esp = cs.nextLine().isEmpty() ? null : cs.nextLine();
+                                RegistroRelatorio.escreverConsultas(db, cpf, crm, esp);
+                                imp("Relatório impresso!");
+                            }
+                            case 4 -> {
+                                RegistroRelatorio.escreverInternados(db);
+                                imp("Relatório impresso!");
+                            }
+                            case 5 -> {
+                                RegistroRelatorio.escreverEstatisticas(db);
+                                imp("Relatório impresso!");
+                            }
+                            case 6 -> {
+                                RegistroRelatorio.escreverPlanos(db);
+                                imp("Relatório impresso!");
+                            }
+                            case 0 ->
+                            {
+                                menur = false;
+                            }
+
+                            default -> System.err.println("Caracter inválido.");
+
+                        }
+                    }
                 }
+
+                case 7 -> {
+                    boolean menuo = true;
+                    while(menuo)
+                    {
+                        MenuHospital.menuRelatorio();
+                        int i = cs.nextInt();
+                        cs.nextLine();
+                        switch(i) {
+                            case 1 -> {
+                                imp("Digite o cpf do paciente. (XXX.XXX.XXX-XX)");
+                                String cpf = cs.nextLine();
+
+                                Paciente paciente = db.getPacienteId(cpf);
+
+                                db.remover(paciente);
+                                imp("Paciente removido.");
+                            }
+                            case 2 -> {
+                                imp("Digite o crm do médico.");
+                                String crm = cs.nextLine();
+
+                                Medico medico = db.getMedico(crm);
+
+                                db.remover(medico);
+                                imp("Médico removido.");
+                            }
+                            case 3 -> {
+                                imp("Digite o ID do plano.");
+                                imp("(O ID do plano é NOME + NUMERO DE PLANO + ANO + MES, juntos)");
+                                String id = cs.nextLine();
+
+                                PlanoDeSaude planoDeSaude = db.getPlano(id);
+
+                                db.getPacientes().stream()
+                                        .filter(paciente -> paciente instanceof PacienteEspecial)
+                                        .map(paciente -> (PacienteEspecial) paciente)
+                                        .toList()
+                                        .forEach(paciente -> paciente.removerPlano(planoDeSaude));
+
+                                db.remover(planoDeSaude);
+                                imp("Plano removido.");
+                            }
+
+                            case 0 ->
+                            {
+                                menuo = false;
+                            }
+
+                            default -> System.err.println("Caracter inválido.");
+                        }
+                    }
+                }
+
                 case 0 -> {
+                    System.out.println("Salvando dados...");
+                    RegistroEventos.salvarDeferidos(db);
+                    try
+                    {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
                     MenuHospital.menuSaida();
                     menu1 = false;
                     System.exit(0);
-                    Runtime.getRuntime().addShutdownHook(new Thread(() ->
-                    {
-                        System.out.println("Salvando dados...");
-                        RegistroEventos.salvarDeferidos(db);
-                    }));
                 }
                 default -> System.err.println("Caracter inválido.");
             }

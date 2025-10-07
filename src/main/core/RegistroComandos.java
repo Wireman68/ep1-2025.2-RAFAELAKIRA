@@ -55,7 +55,7 @@ public class RegistroComandos
         PlanoDeSaude planoDeSaude = db.getPlano(psId);
 
         if(paciente instanceof PacienteEspecial pacienteEspecial) {
-            pacienteEspecial.addPlano(planoDeSaude);
+            pacienteEspecial.adicionarPlano(planoDeSaude);
         }
     }
 
@@ -72,7 +72,7 @@ public class RegistroComandos
                 .toList();
     }
 
-    public static void agendarConsulta(BancoDeDados db, String pId, String mId, LocalDateTime data)
+    public static void agendarConsulta(BancoDeDados db, String pId, String mId, LocalDateTime data, String local)
     {
         if(data.isBefore(LocalDateTime.now()))
         {
@@ -83,31 +83,38 @@ public class RegistroComandos
         Paciente paciente = db.getPacienteId(pId);
         Medico medico = db.getMedico(mId);
 
-        Consulta consulta = new Consulta(paciente, medico, data);
+        Consulta consulta = new Consulta(paciente, medico, data, local);
         registrarConsulta(db, consulta);
     }
 
-    public static void finalizarConsulta(BancoDeDados db, String mId)
+    public static boolean finalizarConsulta(BancoDeDados db, String mId) throws ConsultaException
     {
+        // TRUE = FINALIZADA, FALSE = CANCELADA
+        boolean f = true;
         Medico medico = db.getMedico(mId);
         LocalDateTime presente = LocalDateTime.now();
         Optional<Consulta> tempConsulta = db.getConsultas().stream()
-                .filter(c -> c.getMedico().getID() == mId)
+                .filter(c -> c.getMedico().getID().equals(mId))
                 .filter(c -> c.getStatus() == 0)
                 .findFirst();
 
         if(tempConsulta.isEmpty())
         {
-            System.err.println("Erro: não foi encontrado consulta");
-            return;
+            throw new ConsultaException("Erro: não foi encontrado consulta");
         }
 
         Consulta consulta = tempConsulta.get();
         LocalDateTime dataConsulta = consulta.getData();
         if (presente.isBefore(dataConsulta)) {
             consulta.setStatus(2);
+            f = false;
         } else {
             consulta.setStatus(1);
+            medico.adicionarConsultasConcluidas();
+            if(consulta.getPaciente() instanceof PacienteEspecial pacienteEspecial)
+            {
+
+            }
         }
 
         medico.setDisponivel(dataConsulta, true);
@@ -115,6 +122,7 @@ public class RegistroComandos
         Paciente paciente = consulta.getPaciente();
 
         paciente.getConsultas().add(consulta);
+        return f;
     }
 
     public static void internarPaciente(BancoDeDados db, String pId, String mId, double custo, int quarto)
@@ -144,6 +152,7 @@ public class RegistroComandos
                 .findFirst()
                 .orElse(null);
 
+        assert internacao != null;
         internacao.setDataDeSaida(LocalDateTime.now());
         internacao.setStatus(false);
         paciente.setInternado(false);
@@ -151,7 +160,7 @@ public class RegistroComandos
         if(paciente instanceof PacienteEspecial pacienteEspecial && Duration.between(internacao.getData(), internacao.getDataDeSaida()).toDays() < 7)
         {
             PlanoDeSaude planoDeSaude = db.getPlanoNome("ESPECIALINTERNACAO");
-            pacienteEspecial.addPlano(planoDeSaude);
+            pacienteEspecial.adicionarPlano(planoDeSaude);
             internacao.setCusto(planoDeSaude);
         }
     }

@@ -28,6 +28,7 @@ public class MenuHospital
             imp("4 - Internações");
             imp("5 - Planos de Saúde");
             imp("6 - Imprimir relatório");
+            imp("7 - Outros");
             imp("0 - Finalizar programa");
         } catch(InterruptedException e)
         {
@@ -75,7 +76,6 @@ public class MenuHospital
         imp("======================");
         imp("1 - Cadastrar plano de saúde");
         imp("2 - Cadastrar plano de saúde para um paciente");
-        imp("3 - Mudar plano de saúde");
         imp("0 - Voltar");
     }
 
@@ -89,6 +89,14 @@ public class MenuHospital
         imp("5 - Exibir estatísicas gerais");
         imp("6 - Exibir pacientes em um plano de saúde");
         imp("0 - Voltar");
+    }
+
+    public static void menuOutros()
+    {
+        imp("======================");
+        imp("1 - Remover paciente");
+        imp("2 - Remover médico");
+        imp("1 - Remover plano de saúde");
     }
 
     public static void menuSaida()

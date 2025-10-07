@@ -20,13 +20,63 @@ Desenvolvimento de um sistema de gerenciamento hospitalar utilizando os conceito
 ## Instruções para Compilação e Execução
 
 1. **Compilação:**  
-   [Descrever aqui como compilar o projeto. Exemplo: `javac Main.java` ou o script usado]
 
-2. **Execução:**  
-   [Descrever aqui como executar o projeto. Exemplo: `java Main` ou o script usado]
+   ### Pré requisitos de compilação:
+   - Apache Maven [Versão mais recente]
+   - Java 17 ou maior (Versão usada: 23)
 
-3. **Estrutura de Pastas:**  
-   [Descrever aqui as principais pastas do projeto]
+   ### Para compilar
+   - Clique no arquivo 'compilar.bat'.
+   - Assim que o arquivo for executado, automaticamente irá compilar o código fonte usando maven.
+   - Assim que mostrar que estiver pronto, vá para o diretório target.
+   - O arquivo .jar compilado estará lá.
+
+3. **Execução:**  
+   Apenas clique e execute o arquivo 'SistemaDeGestaoHospitalar-1.0-SNAPSHOT.jar'.
+
+4. **Estrutura de Pastas:**
+
+SistemaDeGestaoHospitalar/
+
+│
+
+├── pom.xml # Configuração Maven (compilação e empacotamento)
+
+├── README.md # Documentação do projeto
+
+│
+
+├── src/
+
+│ ├── main/
+
+│ │ ├── java/
+
+│ │ │ └── hospital/
+
+│ │ │ ├── bancos/ Classe BancoDeDados - armazena todos os dados, getters/setters para tais dados, e métodos de registro/remoção
+
+│ │ │ ├── core/ Registra eventos, funções e relatórios
+
+│ │ │ ├── menus/ Menus de display em console
+
+│ │ │ ├── registro/ Classes de entidades registráveis (Paciente, Médico, Consulta, Internaçao, PlanoDeSaude) + interface base Entidade
+
+│ │ │ ├── terminal/ Contém a classe helper para output em GUI OutputStreamTerminal
+
+│ │ │ ├── GUI.java Classe com a lógica da GUI Swing customizada, executa Main por Thread secundária
+
+│ │ │ └── Main.java Classe principal, mas não é a executada
+
+│
+
+└── resources/
+
+├── banks / Onde os bancos .csv são armazenados
+
+├── diagnostics/ Diagnósticos e Prescrições criadas por médico
+
+└── reports/ Armazena relatórios criados
 
 3. **Versão do JAVA utilizada:**  
    java 23

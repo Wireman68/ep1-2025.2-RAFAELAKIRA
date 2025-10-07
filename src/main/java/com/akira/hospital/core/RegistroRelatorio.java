@@ -222,7 +222,7 @@ public class RegistroRelatorio
     }
 
     public static void escreverEstatisticas(BancoDeDados db) {
-        File file = new File(DIRETORIO, "planos.txt");
+        File file = new File(DIRETORIO, "estatisticas.txt");
         if (!file.exists()) {
             try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
                 writer.println("=============+++Estatísticas+++=============");
@@ -235,11 +235,11 @@ public class RegistroRelatorio
                 writer.println("Quantidade de consultas agendadas: " + db.consultasAgendadas());
                 writer.println("Quantidade de pacientes internados: " + db.totalInternados());
                 writer.println("Quantidade total de planos: " + db.totalPlanos());
-                writer.println("Médico com mais atendimentos: " + db.maisAtendimentos().getNome());
-                writer.println("Especialidade com mais atendimentos: " + db.maisAtendimentosEspecialidade().name());
-                writer.println("Especialidade com mais médicos: " + db.maisMedicosEspecialidade().name());
-                writer.println("Paciente com mais tempo internado: " + db.maiorTempoInternado().getNome());
-                writer.println("Plano de Saúde mais cadastrado: " + db.planoMaisCadastrado().nome() + "  Nível " + db.planoMaisCadastrado().plano());
+                if(db.maisAtendimentos() != null) writer.println("Médico com mais atendimentos: " + db.maisAtendimentos().getNome());
+                if(db.maisAtendimentosEspecialidade() != null) writer.println("Especialidade com mais atendimentos: " + db.maisAtendimentosEspecialidade().name());
+                if(db.maisMedicosEspecialidade() != null) writer.println("Especialidade com mais médicos: " + db.maisMedicosEspecialidade().name());
+                if(db.maiorTempoInternado() != null) writer.println("Paciente com mais tempo internado: " + db.maiorTempoInternado().getNome());
+                if(db.planoMaisCadastrado() != null) writer.println("Plano de Saúde mais cadastrado: " + db.planoMaisCadastrado().nome() + "  Nível " + db.planoMaisCadastrado().plano());
 
             } catch (IOException e) {
                 e.printStackTrace();

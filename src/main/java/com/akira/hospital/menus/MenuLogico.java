@@ -45,7 +45,8 @@ public class MenuLogico
 
                                 Paciente paciente = new Paciente(nome, cpf, data);
                                 RegistroComandos.registrarPaciente(db, paciente);
-                                imp("Paciente cadastrado!");
+                                imp("Paciente " + paciente.getNome() + " cadastrado!");
+                                GUI.nextLine();
                             }
 
                             case 2 -> {
@@ -60,8 +61,9 @@ public class MenuLogico
 
                                     db.remover(paciente);
                                     db.registrar(pacienteEspecial, false);
-                                    imp("Plano do paciente aprimorado!");
+                                    imp("Plano do paciente " + paciente.getNome() + " aprimorado!");
                                 }
+                                GUI.nextLine();
                             }
 
                             case 0 ->
@@ -93,7 +95,8 @@ public class MenuLogico
 
                                 Medico medico = new Medico(nome, crm, especialidade, custo);
                                 RegistroComandos.registrarMedico(db, medico);
-                                imp("Médico cadastrado!");
+                                imp("Médico " + medico.getNome() + " cadastrado!");
+                                GUI.nextLine();
                             }
 
                             case 2 -> {
@@ -106,7 +109,8 @@ public class MenuLogico
 
                                 Especialidade especialidade = Especialidade.valueOf(esp.toUpperCase());
                                 medico.adicionarEspecialidade(especialidade);
-                                imp("Especialidade adicionada!");
+                                imp("Especialidade " + esp + " adicionada!");
+                                GUI.nextLine();
                             }
 
                             case 3 -> {
@@ -125,6 +129,7 @@ public class MenuLogico
                                 medico.adicionarDataConsulta(agenda);
 
                                 imp("Data adicionada!");
+                                GUI.nextLine();
                             }
 
                             case 0 ->
@@ -143,7 +148,6 @@ public class MenuLogico
                         int i = GUI.nextInt();
                         switch (i) {
                             case 1 -> {
-                                PlanoDeSaude plano = null;
                                 imp("Digite o cpf do paciente. (XXX.XXX.XXX-XX)");
                                 String cpf = GUI.nextLine();
                                 imp("Digite o crm do médico.");
@@ -160,7 +164,8 @@ public class MenuLogico
                                 String local = GUI.nextLine();
 
                                 RegistroComandos.agendarConsulta(db, cpf, crm, horario, local);
-                                imp("Consulta agendada!");
+                                imp("Consulta agendada com " + db.getMedico(crm).getNome() + " para " + horario.format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm")) + "!");
+                                GUI.nextLine();
                             }
 
                             case 2 -> {
@@ -177,6 +182,7 @@ public class MenuLogico
                                         {
                                             imp("Dr. " + m.getNome());
                                         }
+                                        GUI.nextLine();
                                     }
                                     case 2 -> {
                                         imp("Digite a data. (DD/MM/AAAA)");
@@ -191,6 +197,7 @@ public class MenuLogico
                                         {
                                             imp("Dr. " + m.getNome());
                                         }
+                                        GUI.nextLine();
                                     }
                                     case 3 -> {
                                         imp("Digite a especialidade desejada.");
@@ -202,6 +209,7 @@ public class MenuLogico
                                         {
                                             imp("Dr. " + m.getNome());
                                         }
+                                        GUI.nextLine();
                                     }
                                     case 4 -> {
                                         imp("Digite a data. (DD/MM/AAAA)");
@@ -221,6 +229,7 @@ public class MenuLogico
                                         {
                                             imp("Dr. " + m.getNome());
                                         }
+                                        GUI.nextLine();
                                     }
 
                                     default -> System.err.println("Caracter inválido.");
@@ -252,6 +261,7 @@ public class MenuLogico
                                 {
                                     imp("Consulta cancelada!");
                                 }
+                                GUI.nextLine();
                             }
 
                             case 0 -> {
@@ -280,7 +290,8 @@ public class MenuLogico
 
                                 RegistroComandos.internarPaciente(db, cpf, crm, custo, quarto);
 
-                                imp("Paciente internado com sucesso!");
+                                imp("Paciente " + db.getPacienteId(cpf).getNome() + " internado com sucesso!");
+                                GUI.nextLine();
                             }
 
                             case 2 -> {
@@ -288,7 +299,8 @@ public class MenuLogico
                                 String cpf = GUI.nextLine();
                                 RegistroComandos.liberarInternacao(db, cpf);
 
-                                imp("Paciente liberado!");
+                                imp("Paciente " + db.getPacienteId(cpf).getNome() + " liberado!");
+                                GUI.nextLine();
                             }
 
                             case 3 -> {
@@ -297,6 +309,7 @@ public class MenuLogico
                                 {
                                     System.out.println(q);
                                 }
+                                GUI.nextLine();
                             }
 
                             case 0 ->
@@ -330,6 +343,7 @@ public class MenuLogico
                                 }
 
                                 imp("Planos de saúde, de bronze a platinum, do tipo " + nome + ", foram registrados!");
+                                GUI.nextLine();
                             }
 
                             case 2 -> {
@@ -351,6 +365,7 @@ public class MenuLogico
                                 {
                                     System.err.println("Erro: paciente não pode ter plano de saúde pois não é especial.");
                                 }
+                                GUI.nextLine();
                             }
 
                             case 0 ->
@@ -372,10 +387,12 @@ public class MenuLogico
                             case 1 -> {
                                 RegistroRelatorio.escreverPaciente(db);
                                 imp("Relatório impresso!");
+                                GUI.nextLine();
                             }
                             case 2 -> {
                                 RegistroRelatorio.escreverMedico(db);
                                 imp("Relatório impresso!");
+                                GUI.nextLine();
                             }
                             case 3 -> {
                                 imp("(Para pular o filtro, pressione ENTER.)");
@@ -387,18 +404,22 @@ public class MenuLogico
                                 String esp = GUI.nextLine().isEmpty() ? null : GUI.nextLine();
                                 RegistroRelatorio.escreverConsultas(db, cpf, crm, esp);
                                 imp("Relatório impresso!");
+                                GUI.nextLine();
                             }
                             case 4 -> {
                                 RegistroRelatorio.escreverInternados(db);
                                 imp("Relatório impresso!");
+                                GUI.nextLine();
                             }
                             case 5 -> {
                                 RegistroRelatorio.escreverEstatisticas(db);
                                 imp("Relatório impresso!");
+                                GUI.nextLine();
                             }
                             case 6 -> {
                                 RegistroRelatorio.escreverPlanos(db);
                                 imp("Relatório impresso!");
+                                GUI.nextLine();
                             }
                             case 0 ->
                             {
@@ -426,6 +447,7 @@ public class MenuLogico
 
                                 db.remover(paciente);
                                 imp("Paciente removido.");
+                                GUI.nextLine();
                             }
                             case 2 -> {
                                 imp("Digite o crm do médico.");
@@ -435,6 +457,7 @@ public class MenuLogico
 
                                 db.remover(medico);
                                 imp("Médico removido.");
+                                GUI.nextLine();
                             }
                             case 3 -> {
                                 imp("Digite o ID do plano.");
@@ -451,6 +474,7 @@ public class MenuLogico
 
                                 db.remover(planoDeSaude);
                                 imp("Plano removido.");
+                                GUI.nextLine();
                             }
 
                             case 0 ->

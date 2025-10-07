@@ -51,7 +51,8 @@ public class GUI
             textField.setText("");
         });
 
-        frame.setSize(1920, 1080);
+        frame.setSize(1280, 720);
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         frame.setBackground(Color.black);
         textField.requestFocusInWindow();

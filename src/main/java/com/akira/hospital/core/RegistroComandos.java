@@ -67,7 +67,7 @@ public class RegistroComandos
                 .filter(m -> especialidade == null || m.getEspecialidades().contains(especialidade))
                 .filter(m -> {
                     if (data == null) return true;
-                    return !m.getCalendarioConsulta().getOrDefault(data, true);
+                    return m.getCalendarioConsulta().getOrDefault(data, true);
                 })
                 .toList();
     }

@@ -1,6 +1,7 @@
 package com.akira.hospital.bancos;
 
 import com.akira.hospital.registro.*;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.*;
@@ -189,7 +190,8 @@ public class BancoDeDados
 
     public int totalPlanos()
     {
-        return planoDeSaudes.size();
+        // -1 PARA DESCONTAR O PLANO DE INTERNAÇÃO GRATUITA
+        return planoDeSaudes.size() - 1;
     }
 
     public int totalInternados()
@@ -202,7 +204,7 @@ public class BancoDeDados
         return consultas.stream().filter(consulta -> consulta.getStatus() == 0).toList().size();
     }
 
-    public Medico maisAtendimentos()
+    public @Nullable Medico maisAtendimentos()
     {
         return consultas.stream()
                 .collect(Collectors.groupingBy(Consulta::getMedico, Collectors.counting()))
@@ -212,7 +214,7 @@ public class BancoDeDados
                 .orElse(null);
     }
 
-    public Especialidade maisAtendimentosEspecialidade() {
+    public @Nullable Especialidade maisAtendimentosEspecialidade() {
         return consultas.stream()
                 .flatMap(consulta -> consulta.getMedico().getEspecialidades().stream())
                 .collect(Collectors.groupingBy(e -> e, Collectors.counting()))
@@ -222,7 +224,7 @@ public class BancoDeDados
                 .orElse(null);
     }
 
-    public Especialidade maisMedicosEspecialidade() {
+    public @Nullable Especialidade maisMedicosEspecialidade() {
         Map<Especialidade, Long> quantidade = medicos.stream()
                 .flatMap(medico -> medico.getEspecialidades().stream())
                 .collect(Collectors.groupingBy(e -> e, Collectors.counting()));
@@ -233,7 +235,7 @@ public class BancoDeDados
                 .orElse(null);
     }
 
-    public Paciente maiorTempoInternado() {
+    public @Nullable Paciente maiorTempoInternado() {
         Map<Paciente, Long> duracaoTotal = new HashMap<>();
         for (Internacao internacao : internacoes) {
             if (internacao.getDataDeSaida() != null) {
@@ -247,7 +249,7 @@ public class BancoDeDados
                 .orElse(null);
     }
 
-    public PlanoDeSaude planoMaisCadastrado() {
+    public @Nullable PlanoDeSaude planoMaisCadastrado() {
 
         List<PacienteEspecial> pacienteEspeciais = pacientes.stream()
                 .filter(paciente -> paciente instanceof PacienteEspecial)

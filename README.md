@@ -40,9 +40,9 @@ SistemaDeGestaoHospitalar/
 
 │
 
-├── pom.xml # Configuração Maven (compilação e empacotamento)
+├── pom.xml Configuração Maven (compilação e empacotamento)
 
-├── README.md # Documentação do projeto
+├── README.md Documentação do projeto
 
 │
 

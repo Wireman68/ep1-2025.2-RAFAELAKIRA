@@ -1,5 +1,8 @@
 # 🏥 Trabalho Prático – Sistema de Gerenciamento Hospitalar  
 
+## O.B.S. Temporário:
+Na execução, input de opção precisa de uma segunda vez de enter para confirmar.
+
 ### 🎯 Objetivo  
 Implementar um *Sistema de Gerenciamento Hospitalar* em *Java, aplicando conceitos avançados de **Programação Orientada a Objetos (POO), com foco em **herança, polimorfismo, encapsulamento, persistência de dados* e *regras de negócio mais complexas*.  
 

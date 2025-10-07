@@ -100,20 +100,20 @@ SistemaDeGestaoHospitalar/
 
 ## Vídeo de Demonstração
 
-- [Inserir o link para o vídeo no YouTube/Drive aqui]
+- https://drive.google.com/file/d/1y672k123YRIy_i8H7BJ_sdvIb3zywLbp/view?usp=drive_link
 
 ---
 
 ## Prints da Execução
 
 1. Menu Principal:  
-   ![Inserir Print 1](caminho/do/print1.png)
+   ![Inserir Print 1](https://github.com/Wireman68/ep1-2025.2-RAFAELAKIRA/blob/main/images/print1.png?raw=true)
 
 2. Cadastro de Médico:  
-   ![Inserir Print 2](caminho/do/print2.png)
+   ![Inserir Print 2](https://github.com/Wireman68/ep1-2025.2-RAFAELAKIRA/blob/main/images/print2.png?raw=true)
 
 3. Relatório de ?:  
-   ![Inserir Print 3](caminho/do/print3.png)
+   ![Inserir Print 3](https://github.com/Wireman68/ep1-2025.2-RAFAELAKIRA/blob/main/images/print3.png?raw=true)
 
 ---
 

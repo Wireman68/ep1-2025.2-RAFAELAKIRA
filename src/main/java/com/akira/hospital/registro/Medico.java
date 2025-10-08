@@ -6,8 +6,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -19,12 +17,11 @@ public class Medico implements Entidade
 
     private final String nome;
     private final String crm;
-    private List<Especialidade> especialidades;
+    private final List<Especialidade> especialidades;
     private int consultasConcluidas = 0;
 
-    private double custoConsulta;
+    private final double custoConsulta;
 
-    //TRUE = DISPONIVEL, FALSE = OCUPADO
     private Map<LocalDateTime, Boolean> calendarioConsulta;
 
     public Medico(String nome, String crm, Especialidade especialidadePrimaria, double custoConsulta)
@@ -71,11 +68,6 @@ public class Medico implements Entidade
         return String.join(",", String.valueOf(crm), nome, linhaEspecialidade, String.valueOf(custoConsulta), linhaCalendario);
     }
 
-    @Override
-    public void displayDados() {
-
-    }
-
     public void adicionarDataConsulta(LocalDateTime data)
     {
         calendarioConsulta.put(data, true);
@@ -109,10 +101,6 @@ public class Medico implements Entidade
 
     public double getCustoConsulta() {
         return custoConsulta;
-    }
-
-    public void setCustoConsulta(double d) {
-        this.custoConsulta = d;
     }
 
     public static Medico converterDado(String line) {

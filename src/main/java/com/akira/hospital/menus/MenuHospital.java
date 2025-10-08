@@ -62,6 +62,7 @@ public class MenuHospital
         imp("1 - Cadastrar médico");
         imp("2 - Adicionar especialidade para um médico");
         imp("3 - Adicionar data em um calendário de um médico");
+        imp("4 - Listas IDs de especialidades");
         imp("0 - Voltar");
         } catch(InterruptedException e)
         {

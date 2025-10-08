@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static com.akira.hospital.menus.MenuHospital.imp;
+
 public class RegistroComandos
 {
     public static void registrarPaciente(BancoDeDados db, Paciente p)
@@ -56,6 +58,11 @@ public class RegistroComandos
 
         if(paciente instanceof PacienteEspecial pacienteEspecial) {
             pacienteEspecial.adicionarPlano(planoDeSaude);
+            imp("Paciente está dentro do plano " + planoDeSaude.nome() + "!");
+        }
+        else
+        {
+            System.err.println("Erro: paciente não pode ter plano de saúde pois não é especial.");
         }
     }
 
@@ -89,7 +96,6 @@ public class RegistroComandos
 
     public static boolean finalizarConsulta(BancoDeDados db, String mId) throws ConsultaException
     {
-        // TRUE = FINALIZADA, FALSE = CANCELADA
         boolean f = true;
         Medico medico = db.getMedico(mId);
         LocalDateTime presente = LocalDateTime.now();
@@ -111,10 +117,6 @@ public class RegistroComandos
         } else {
             consulta.setStatus(1);
             medico.adicionarConsultasConcluidas();
-            if(consulta.getPaciente() instanceof PacienteEspecial pacienteEspecial)
-            {
-
-            }
         }
 
         medico.setDisponivel(dataConsulta, true);
@@ -136,7 +138,6 @@ public class RegistroComandos
             return;
         }
 
-        //NOTA: DATA DA INTERNACAO SERA NO MESMO TEMPO QUE A FUNCAO FOR EXECUTADA
         LocalDateTime dataInternacao = LocalDateTime.now();
 
         Internacao internacao = new Internacao(paciente, medico, dataInternacao, quarto, custo);

@@ -17,8 +17,6 @@ import static com.akira.hospital.menus.MenuHospital.imp;
 
 public class MenuLogico
 {
-    private static final DateTimeFormatter FORMATO_PRINT = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm");
-
     public static void menu(BancoDeDados db)
     {
         MenuHospital.carregando();
@@ -129,6 +127,16 @@ public class MenuLogico
                                 medico.adicionarDataConsulta(agenda);
 
                                 imp("Data adicionada!");
+                                GUI.nextLine();
+                            }
+
+                            case 4 ->
+                            {
+                                imp("Especialidades (por ID):");
+                                for(Especialidade especialidade : Especialidade.values())
+                                {
+                                    imp(especialidade.name());
+                                }
                                 GUI.nextLine();
                             }
 
@@ -339,7 +347,7 @@ public class MenuLogico
                                 for(int j = 0; j <= 3; j++)
                                 {
                                     PlanoDeSaude planoDeSaude = new PlanoDeSaude(nome, j, data, desconto);
-                                    db.registrar(planoDeSaude, false);
+                                    RegistroComandos.registrarPlano(db, planoDeSaude);
                                 }
 
                                 imp("Planos de saúde, de bronze a platinum, do tipo " + nome + ", foram registrados!");
@@ -352,19 +360,7 @@ public class MenuLogico
                                 imp("Digite o ID do plano.");
                                 imp("(O ID do plano é NOME + NUMERO DE PLANO + ANO + MES, juntos)");
                                 String id = GUI.nextLine();
-
-                                PlanoDeSaude planoDeSaude = db.getPlano(id);
-                                Paciente paciente = db.getPacienteId(cpf);
-
-                                if(paciente instanceof PacienteEspecial pacienteEspecial)
-                                {
-                                    pacienteEspecial.adicionarPlano(planoDeSaude);
-                                    imp("Paciente está dentro do plano " + planoDeSaude.nome() + "!");
-                                }
-                                else
-                                {
-                                    System.err.println("Erro: paciente não pode ter plano de saúde pois não é especial.");
-                                }
+                                    RegistroComandos.adicionarPlano(db, cpf, id);
                                 GUI.nextLine();
                             }
 

@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -21,7 +19,6 @@ public class Internacao implements Entidade
     private int quarto;
     private double custo;
     private final double salvo;
-    //TRUE = EXISTE, FALSE = FINALIZADA / CANCELADA
     private boolean status;
 
     public Internacao(Paciente paciente, Medico medico, LocalDateTime dataDeEntrada, int quarto, double custo)
@@ -123,34 +120,4 @@ public class Internacao implements Entidade
 
         return internacao;
     }
-
-    public static Internacao converterID(String id)
-    {
-        File f = new File("resources/banks");
-        if(!f.exists()) f.mkdirs();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(new File(f, "internacoes.csv"))))
-        {
-            reader.readLine();
-            String line;
-            while((line = reader.readLine()) != null)
-            {
-                Internacao internacao = converterDado(line);
-                if(internacao.getID().equals(id)) return internacao;
-            }
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    @Override
-    public void displayDados() {
-
-    }
-
-
 }

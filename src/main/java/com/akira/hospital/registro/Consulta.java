@@ -1,11 +1,5 @@
 package com.akira.hospital.registro;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -20,7 +14,6 @@ public class Consulta implements Entidade
     private LocalDateTime data;
     private double custo;
     private final double salvo;
-    // LEMBRETE: 0 = AGENDADO, 1 = COMPLETA, 2 = CANCELADA;
     private int status;
 
     public Consulta(Paciente paciente, Medico medico, LocalDateTime data, String local)
@@ -93,11 +86,6 @@ public class Consulta implements Entidade
         return String.join(",", paciente.getID(), medico.getID(), data.format(FORMATO_CSV), String.valueOf(status), local);
     }
 
-    @Override
-    public void displayDados() {
-
-    }
-
     public double getCusto() {
         return custo;
     }
@@ -114,31 +102,10 @@ public class Consulta implements Entidade
         String[] partes = line.split(",");
         Paciente pacienteC = Paciente.converterID(partes[0]);
         Medico medicoC = Medico.converterID(partes[1]);
+        assert pacienteC != null;
+        assert medicoC != null;
         Consulta consulta = new Consulta(pacienteC, medicoC, LocalDateTime.parse(partes[2], FORMATO_CSV), partes[4]);
         consulta.status = Integer.parseInt(partes[3]);
         return consulta;
-    }
-
-    public static Consulta converterID(String id)
-    {
-        File f = new File("resources/banks");
-        if(!f.exists()) f.mkdirs();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(new File(f, "consultas.csv"))))
-        {
-            reader.readLine();
-            String line;
-            while((line = reader.readLine()) != null)
-            {
-                Consulta consulta = converterDado(line);
-                if(consulta.getID().equals(id)) return consulta;
-            }
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
-        return null;
     }
 }

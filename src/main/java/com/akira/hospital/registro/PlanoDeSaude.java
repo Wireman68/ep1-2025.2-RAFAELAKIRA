@@ -1,14 +1,7 @@
 package com.akira.hospital.registro;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.YearMonth;
 
-//Lembrete: int plano: 0 - bronze, 1 - prata, 2 - gold, 3 - platinum
 public record PlanoDeSaude(String nome, int plano, YearMonth dataDeValidade, double desconto) implements Entidade
 {
     @Override
@@ -30,33 +23,5 @@ public record PlanoDeSaude(String nome, int plano, YearMonth dataDeValidade, dou
     {
         String[] partes = line.split(",");
         return new PlanoDeSaude(partes[1], Integer.parseInt(partes[2]), YearMonth.parse(partes[3]), Double.parseDouble(partes[4]));
-    }
-
-    public static PlanoDeSaude converterID(String id)
-    {
-        File f = new File("resources/banks");
-        if(!f.exists()) f.mkdirs();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(new File(f, "planos.csv"))))
-        {
-            reader.readLine();
-            String line;
-            while((line = reader.readLine()) != null)
-            {
-                PlanoDeSaude plano = converterDado(line);
-                if(plano.getID().equals(id)) return plano;
-            }
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    @Override
-    public void displayDados() {
-
     }
 }

@@ -7,6 +7,8 @@ import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.akira.hospital.menus.MenuHospital.imp;
+
 public class BancoDeDados
 {
     private static final int[] QUARTOS =
@@ -38,23 +40,6 @@ public class BancoDeDados
         return planoDeSaudes;
     }
 
-    public Paciente getPaciente(int i)
-    {
-        return pacientes.get(i);
-    }
-
-    public Paciente getPaciente(String nome)
-    {
-        for(Paciente p : pacientes)
-        {
-            if(p.getNome().equalsIgnoreCase(nome))
-            {
-                return p;
-            }
-        }
-        return null;
-    }
-
     public Paciente getPacienteId(String cpf)
     {
         for(Paciente p : pacientes)
@@ -71,11 +56,6 @@ public class BancoDeDados
 
     public double getSalvoInternacoes() {
         return getInternacoes().stream().mapToDouble(Internacao::getSalvo).sum();
-    }
-
-    public Medico getMedico(int i)
-    {
-        return medicos.get(i);
     }
 
     public Medico getMedico(String crm)
@@ -134,17 +114,22 @@ public class BancoDeDados
     {
         switch(entidade)
         {
-            case Paciente p -> checarRegistro(p, pacientes, 0, inicializacao);
-            case Medico m -> checarRegistro(m, medicos, 1, inicializacao);
-            case Consulta a -> checarRegistro(a, consultas, 2, inicializacao);
-            case Internacao i -> checarRegistro(i, internacoes, 3, inicializacao);
-            case PlanoDeSaude s -> checarRegistro(s, planoDeSaudes, 4, inicializacao);
+            case Paciente p -> checarRegistro(p, pacientes, inicializacao);
+            case Medico m -> checarRegistro(m, medicos, inicializacao);
+            case Consulta a -> checarRegistro(a, consultas, inicializacao);
+            case Internacao i -> checarRegistro(i, internacoes, inicializacao);
+            case PlanoDeSaude s -> checarRegistro(s, planoDeSaudes, inicializacao);
             default -> throw new IllegalArgumentException("Entidade invalida.");
         }
     }
 
-    private <T extends Entidade> void checarRegistro(T entidade, Collection<T> entidades, int i, boolean inicializacao) throws IllegalArgumentException
+    private <T extends Entidade> void checarRegistro(T entidade, Collection<T> entidades, boolean inicializacao) throws IllegalArgumentException
     {
+        if(inicializacao)
+        {
+            imp("Inicializando " + entidade.getClass().getName() + ".class");
+        }
+
         for(T e : entidades)
         {
             if(e.equals(entidade) || e.getID().equals(entidade.getID())) throw new IllegalArgumentException("Nao pode ter uma copia de " + entidade + ".");

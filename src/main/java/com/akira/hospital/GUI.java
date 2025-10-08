@@ -61,14 +61,6 @@ public class GUI
         System.setErr(new PrintStream(new OutputStreamTerminal(textArea)));
     }
 
-    public static void print(String s) {
-        SwingUtilities.invokeLater(() -> textArea.append(s));
-    }
-
-    public static void println(String s) {
-        print(s + "\n");
-    }
-
     public static void cls() {
         SwingUtilities.invokeLater(() -> textArea.setText(""));
     }

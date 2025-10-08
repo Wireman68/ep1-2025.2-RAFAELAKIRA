@@ -15,16 +15,11 @@ import java.util.stream.Collectors;
 
 public class RegistroEventos
 {
-    // NOME DO DIRETÓRIO ONDE FICARÃO SALVO OS DADOS
     private static final String DIRETORIO = "resources/banks";
-    //NOME DO DIRETÓRIO ONDE FICARÃO AS FICHAS DE CONSULTA
     private static final String DIRETORIO2 = "resources/diagnostics";
-    //NOME DO DIRETÓRIO ONDE FICARÃO OS RELATÓRIOS
     private static final String DIRETORIO3 = "resources/reports";
-    // NOMES DE CADA BANCO DE DADOS
     private static final String[] NOMEBANCOS = {"pacientes", "medicos", "consultas", "internacoes", "planos", "especiais"};
 
-    //LEMBRETE DE ORDEM DE REGISTRO: 1 - Pacientes, 2 - Medicos, 3 - Consultas, 4 - Internacoes, 5 - Planos De Saude, 6 - Listas dentro de pacientes
     public static void initBancoDeDados(BancoDeDados db)
     {
         File f = new File(DIRETORIO);
